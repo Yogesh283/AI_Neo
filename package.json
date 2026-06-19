@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --mode production",
+    "build:prod": "vite build --mode production",
+    "deploy:pack": "npm run build:prod && powershell -Command \"Compress-Archive -Path dist\\* -DestinationPath neo-deploy.zip -Force\"",
     "lint": "eslint .",
     "preview": "vite preview",
     "cap:sync": "npm run build && npx cap sync android",

@@ -19,6 +19,7 @@ dist-ssr
 
 # APK builds
 *.apk
+neo-deploy.zip
 
 # Capacitor / Android (build outputs ignored via android/.gitignore)
 
