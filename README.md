@@ -1,16 +1,51 @@
-# React + Vite
+# AI Neo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ChatGPT-style AI chat web app with login, Android APK support, and server-ready deployment.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Dark theme chat UI (sidebar, messages, suggestions)
+- Login & Register (Email + Google)
+- Search chats, Library, user menu
+- Android APK via Capacitor
 
-## React Compiler
+## Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+Open http://localhost:5173
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Build
+
+```bash
+# Web
+npm run build
+
+# Android APK
+npm run android:build
+```
+
+APK output: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+## Server + APK
+
+Deploy `dist` to your server, then build APK with server URL:
+
+```bash
+set CAPACITOR_SERVER_URL=https://yourdomain.com
+npm run android:build
+```
+
+Copy `.env.example` to `.env` and set your URLs.
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production web build |
+| `npm run android:build` | Build debug APK |
+| `npm run cap:sync` | Sync web build to Android |
