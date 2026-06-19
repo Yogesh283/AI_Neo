@@ -11,25 +11,29 @@
 
 ## Important
 
-- **Git clone** = saara source code server par aata hai (`src/`, `android/`, etc.)
-- **Website live** = `dist` files chahiye (`index.html`, `assets/`, `.htaccess`)
-- Server par **npm nahi hai** — build hamesha **local PC** par karo
-- Galat `index.html` (`/src/main.jsx`) se MIME error aata hai — zip extract zaroori hai
+- `contentscript.js` errors = **browser extension** (MetaMask etc.) — **ignore karo**
+- `main.jsx MIME text/plain` = **galat index.html** serve ho raha hai — neeche Step 3 zaroor karo
+- Server par **npm nahi hai** — build local PC par hoti hai
+- `live/` folder = production website files (git mein committed)
 
 ---
 
 ## Pehli baar setup
 
-### Step 1 — Local se GitHub par push (Windows CMD)
+### Step 1 — Local push + live build (Windows CMD)
 
 ```cmd
 cd D:\Neo
 git add .
 git commit -m "update"
 git push origin main
+npm run deploy:live
+git add live
+git commit -m "Update live site files"
+git push origin main
 ```
 
-### Step 2 — Server par code clone (SSH)
+### Step 2 — Server code clone (SSH)
 
 ```bash
 cd ~/domains/pixswp.com/public_html
@@ -39,106 +43,97 @@ cd Neo
 ls
 ```
 
-Repo **public** hai — username/password mat do.
+### Step 3 — Site live karo (SSH) — ZAROORI
 
-### Step 3 — Local par build + zip (Windows CMD)
-
-```cmd
-cd D:\Neo
-npm run deploy:pack
+```bash
+cd ~/domains/pixswp.com/public_html/Neo
+cp -r live/* .
+ls -la
+head -3 index.html
 ```
 
-Output: `D:\Neo\neo-deploy.zip`
+`index.html` mein `/assets/index` dikhna chahiye — **`main.jsx` NAHI**.
 
-### Step 4 — Hostinger File Manager
+### Step 4 — Browser check
 
-1. Login: https://hpanel.hostinger.com
-2. **File Manager** → `domains` → `pixswp.com` → `public_html` → **Neo**
-3. `default.php` delete karo (agar hai)
-4. `neo-deploy.zip` upload karo
-5. Right-click → **Extract** (overwrite allow karo)
-6. Zip delete karo (optional)
-
-### Step 5 — Verify
-
-Browser: https://neo.pixswp.com (Ctrl+Shift+R — hard refresh)
-
-`Neo` folder mein ye files honi chahiye:
-
-```
-Neo/
-├── index.html          ← /assets/index-xxx.js load karega
-├── .htaccess
-├── favicon.svg
-├── icons.svg
-├── assets/
-│   ├── index-xxx.js
-│   └── index-xxx.css
-├── src/                ← git se (theek hai, ignore karo browser mein)
-└── package.json
-```
+https://neo.pixswp.com — `Ctrl+Shift+R` hard refresh
 
 ---
 
-## Har update ke baad (full flow)
+## Har update ke baad
 
-### Local — code push + build (Windows CMD)
+### Local (Windows CMD)
 
 ```cmd
 cd D:\Neo
 git add .
 git commit -m "update"
 git push origin main
-npm run deploy:pack
+npm run deploy:live
+git add live
+git commit -m "Update live site files"
+git push origin main
 ```
 
-### Server — latest code pull (SSH)
+### Server (SSH)
 
 ```bash
 cd ~/domains/pixswp.com/public_html/Neo
 git pull origin main
+cp -r live/* .
 ```
 
-### File Manager — site update
-
-1. `neo-deploy.zip` upload karo `Neo` folder mein
-2. Extract karo (overwrite)
-3. Browser refresh: https://neo.pixswp.com
+Browser refresh: https://neo.pixswp.com
 
 ---
 
-## Private repo ho to (SSH)
+## Neo folder structure
 
-GitHub → Settings → Developer settings → Personal access token (`repo` scope)
-
-```bash
-cd ~/domains/pixswp.com/public_html
-rm -rf Neo
-git clone https://github.com/Yogesh283/AI_Neo.git Neo
 ```
-
-- Username: `Yogesh283`
-- Password: **token** (GitHub password nahi)
-
-Credentials save karo:
-
-```bash
-cd ~/domains/pixswp.com/public_html/Neo
-git config credential.helper store
-git pull origin main
+Neo/
+├── live/               ← git se (production files source)
+│   ├── index.html
+│   ├── .htaccess
+│   └── assets/
+├── index.html          ← cp ke baad (site yahi se chalti hai)
+├── assets/             ← cp ke baad
+├── src/                ← source code (git)
+└── package.json
 ```
 
 ---
 
-## FTP deploy (optional — Windows CMD)
+## Zip upload (alternative)
 
 ```cmd
 cd D:\Neo
-copy .env.deploy.example .env.deploy
+npm run deploy:pack
 ```
 
-`.env.deploy` mein FTP details bharo (hPanel → FTP Accounts):
+File Manager → `Neo` folder → `neo-deploy.zip` upload → Extract (overwrite)
 
+---
+
+## Private repo (SSH)
+
+GitHub token banao (`repo` scope), phir:
+
+```bash
+git clone https://github.com/Yogesh283/AI_Neo.git Neo
+```
+
+Username: `Yogesh283` | Password: **token**
+
+---
+
+## FTP deploy (optional)
+
+```cmd
+copy .env.deploy.example .env.deploy
+npm run deploy:ftp
+```
+
+`.env.deploy`:
 ```
 FTP_HOST=ftp.pixswp.com
 FTP_USER=your_username
@@ -146,52 +141,56 @@ FTP_PASS=your_password
 FTP_PATH=/domains/pixswp.com/public_html/Neo
 ```
 
-Deploy:
-
-```cmd
-npm run deploy:ftp
-```
-
 ---
 
-## Android APK (server-linked)
-
-Server live hone ke baad:
+## Android APK
 
 ```cmd
-cd D:\Neo
 set CAPACITOR_SERVER_URL=https://neo.pixswp.com
 npm run android:build
 ```
-
-APK: `android\app\build\outputs\apk\debug\app-debug.apk`
 
 ---
 
 ## Troubleshooting
 
-| Error | Reason | Fix |
-|-------|--------|-----|
-| `main.jsx MIME type text/plain` | Source `index.html` serve ho raha hai | `neo-deploy.zip` upload + extract |
-| `favicon.svg 404` | dist files upload nahi hui | zip dubara extract karo |
-| `git: not a git repository` | clone nahi hua | Step 2 dubara karo |
-| `npm: command not found` | server par Node nahi | local `npm run deploy:pack` use karo |
-| `Invalid username or token` | private repo + password | GitHub token use karo |
-| Default Hostinger page | galat folder | `public_html/Neo` check karo |
-| `contentscript.js` warnings | browser extension | ignore — app error nahi |
+| Error | Fix |
+|-------|-----|
+| `main.jsx MIME text/plain` | Server: `cp -r live/* .` |
+| `favicon.svg 404` | `cp -r live/* .` dubara karo |
+| `contentscript.js` warnings | Browser extension — ignore |
+| Default Hostinger page | Galat folder — `public_html/Neo` check karo |
+| `npm not found` on server | Normal — local `npm run deploy:live` use karo |
+
+### Server par check karo
+
+```bash
+cd ~/domains/pixswp.com/public_html/Neo
+head -5 index.html
+ls live/assets/
+ls assets/
+```
+
+Sahi `index.html` example:
+```html
+<script type="module" crossorigin src="/assets/index-zNu17ywf.js"></script>
+```
+
+Galat (error wala):
+```html
+<script type="module" src="/src/main.jsx"></script>
+```
 
 ---
 
-## Quick commands
+## Quick one-liners
 
-**Local push + build:**
+**Local:**
 ```cmd
-cd D:\Neo && git add . && git commit -m "update" && git push origin main && npm run deploy:pack
+cd D:\Neo && npm run deploy:live && git add live && git commit -m "live update" && git push origin main
 ```
 
-**Server pull:**
+**Server:**
 ```bash
-cd ~/domains/pixswp.com/public_html/Neo && git pull origin main
+cd ~/domains/pixswp.com/public_html/Neo && git pull origin main && cp -r live/* .
 ```
-
-Phir File Manager se `neo-deploy.zip` upload + extract.

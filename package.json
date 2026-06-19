@@ -8,6 +8,7 @@
     "build": "vite build --mode production",
     "build:prod": "vite build --mode production",
     "deploy:pack": "npm run build:prod && powershell -Command \"Compress-Archive -Path dist\\* -DestinationPath neo-deploy.zip -Force\"",
+    "deploy:live": "npm run build:prod && node scripts/copy-live.js",
     "deploy:ftp": "npm run deploy:pack && node scripts/deploy-ftp.js",
     "lint": "eslint .",
     "preview": "vite preview",
