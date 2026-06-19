@@ -1,4 +1,7 @@
-# Hostinger Deploy — neo.pixswp.com
+# Hostinger Deploy — public_html/Neo
+
+Domain: https://neo.pixswp.com  
+Server folder: `public_html/Neo`
 
 ## Step 1: Build (local)
 
@@ -6,43 +9,43 @@
 npm run deploy:pack
 ```
 
-Yeh `dist/` build karega aur `neo-deploy.zip` banayega.
+Creates `neo-deploy.zip` in project root.
 
-## Step 2: Hostinger hPanel
+## Step 2: Upload via File Manager
 
-1. Login: https://hpanel.hostinger.com
-2. **Websites** → **neo.pixswp.com** → **File Manager**
-3. `public_html` folder kholo
-4. Purani default files delete karo (`index.html`, `default.php`, etc.)
-5. `neo-deploy.zip` upload karo
-6. Zip par right-click → **Extract**
-7. Zip delete kar do (optional)
+1. https://hpanel.hostinger.com → **File Manager**
+2. Open `public_html` → **Neo** folder
+3. **Delete** `default.php`
+4. Upload `neo-deploy.zip` into **Neo** folder
+5. Right-click zip → **Extract**
+6. Delete zip after extract
 
 ## Step 3: Verify
 
-Browser mein kholo: https://neo.pixswp.com
+Open https://neo.pixswp.com — Login page should appear.
 
-Login page dikhna chahiye.
+## Files inside Neo folder
 
-## Option B: Git Deploy (Hostinger)
+```
+Neo/
+├── index.html
+├── .htaccess
+├── favicon.svg
+├── icons.svg
+└── assets/
+    ├── index-xxx.js
+    └── index-xxx.css
+```
 
-1. hPanel → **Git** → Create repository
-2. GitHub repo connect karo: `https://github.com/Yogesh283/AI_Neo.git`
-3. Build command: `npm install && npm run build`
-4. Output directory: `dist`
-5. Deploy branch: `main`
+## Auto deploy (FTP)
 
-## APK (server-linked)
+1. Copy `.env.deploy.example` → `.env.deploy`
+2. Fill Hostinger FTP details from hPanel → FTP Accounts
+3. Run: `npm run deploy:ftp`
+
+## APK
 
 ```bash
 set CAPACITOR_SERVER_URL=https://neo.pixswp.com
 npm run android:build
 ```
-
-## Troubleshooting
-
-| Problem | Fix |
-|---------|-----|
-| Default Hostinger page | `public_html` se purani files delete karo |
-| Blank page | Cache clear karo, files `public_html` root mein honi chahiye |
-| Assets 404 | `index.html` aur `assets/` same folder mein hon |
